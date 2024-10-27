@@ -4,11 +4,12 @@ namespace ToDoListBlazor;
 
 public class ToDoListService
 {
-    private readonly string filePath = Path.Combine(AppContext.BaseDirectory, "tasks.json");
+    private readonly string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ToDoListBlazor", "tasks.json");
     private List<TaskItem> tasks;
 
     public ToDoListService()
     {
+        EnsureDataDirectoryExists(); // Ensure the directory exists
         tasks = LoadTasks();
     }
 
@@ -82,4 +83,15 @@ public class ToDoListService
             return new List<TaskItem>();
         }
     }
+
+    private void EnsureDataDirectoryExists()
+    {
+        var directory = Path.GetDirectoryName(filePath);
+
+        if (directory is not null && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+    }
+
 }
