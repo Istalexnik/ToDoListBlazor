@@ -1,0 +1,80 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject ToDoListService ToDoService
+
+<PageTitle>Home</PageTitle>
+
+<h3>To-Do List</h3>
+
+<div class="mb-3">
+    <input @bind="newTaskDescription" placeholder="Enter new task" class="form-control" />
+    <button @onclick="AddTask" class="btn btn-primary mt-2">Add Task</button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in ToDoService.GetTasks())
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Description</td>
+                <td>@(task.IsComplete ? "Completed" : "Incomplete")</td>
+                <td>
+                    @if (task.IsComplete)
+                    {
+                        <!-- Mark Incomplete button shown if task is complete -->
+                        <button @onclick="() => MarkTaskAsIncomplete(task.Id)"
+                                class="btn btn-warning btn-sm">
+                            Mark Incomplete
+                        </button>
+                    }
+                    else
+                    {
+                        <!-- Complete button shown if task is incomplete -->
+                        <button @onclick="() => MarkTaskAsComplete(task.Id)"
+                                class="btn btn-success btn-sm">
+                            Complete
+                        </button>
+                    }
+                    <button @onclick="() => DeleteTask(task.Id)" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private string newTaskDescription = string.Empty;
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTaskDescription))
+        {
+            ToDoService.AddTask(newTaskDescription);
+            newTaskDescription = string.Empty;
+        }
+    }
+
+    private void MarkTaskAsComplete(int id)
+    {
+        ToDoService.MarkTaskAsComplete(id);
+    }
+
+    private void MarkTaskAsIncomplete(int id)
+    {
+        ToDoService.MarkTaskAsIncomplete(id);
+    }
+
+    private void DeleteTask(int id)
+    {
+        ToDoService.DeleteTask(id);
+    }
+}
